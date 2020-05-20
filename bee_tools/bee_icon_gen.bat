@@ -1,0 +1,1 @@
+python3 bee_icon_gen.py "$0" "$1" "$2"
