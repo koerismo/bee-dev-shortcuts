@@ -19,36 +19,12 @@
 
 
 import bpy
+from os import path
 
-
-def example_function(text, save_path, render_path):
+def example_function(model_in, save_path, render_path):
     # Clear existing objects.
-    bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    scene = bpy.context.scene
-    
-    txt_data = bpy.data.curves.new(name="MyText", type='FONT')
-
-    # Text Object
-    txt_ob = bpy.data.objects.new(name="MyText", object_data=txt_data)
-    scene.collection.objects.link(txt_ob)   # add the data to the scene as an object
-    txt_data.body = text         # the body text to the command line arg given
-    txt_data.align_x = 'CENTER'  # center text
-
-    # Camera
-    cam_data = bpy.data.cameras.new("MyCam")
-    cam_ob = bpy.data.objects.new(name="MyCam", object_data=cam_data)
-    scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
-    scene.camera = cam_ob       # set the active camera
-    cam_ob.location = 0.0, 0.0, 10.0
-
-    # Light
-    light_data = bpy.data.lights.new("MyLight", 'POINT')
-    light_ob = bpy.data.objects.new(name="MyLight", object_data=light_data)
-    scene.collection.objects.link(light_ob)
-    light_ob.location = 2.0, 2.0, 5.0
-
-    bpy.context.view_layer.update()
+    bpy.ops.import_scene.obj(filepath=path.abspath(model_in), axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
 
     if save_path:
         bpy.ops.wm.save_as_mainfile(filepath=save_path)
@@ -103,7 +79,7 @@ def main():
         parser.print_help()
         return
 
-    if not args.text:
+    if not args.model_in:
         print("Error: --text=\"some string\" argument not given, aborting.")
         parser.print_help()
         return

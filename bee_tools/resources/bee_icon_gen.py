@@ -34,13 +34,16 @@ def saveIcon(icon):
     img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
     img_icon_small.save(bt_dir+'/temp/icon_small.png')
     img_icon_large.save(bt_dir+'/temp/icon_large.png')
-    subprocess.run([bt_dir+bt_config["vtfcmd exe"], '-input '+bt_dir+"/temp/icon_large.png"])
+    subprocess.run(['"'+vtfcmd_path+'"', '-input '+bt_dir+"/temp/icon_large.png",'-output '+bt_dir+"/temp/icon_vtf"])
 
 #get bee_tools dir
 bt_dir = os.path.abspath(__file__+"/../..")
 bset(50,"loading configuration...")
 #load config
 bt_config = json.loads(open(bt_dir+"/config.json","r").read())
+blender_path = [bt_dir+bt_config["blender exe"] if bt_config["blender relative"] else bt_config["blender exe"]][0]
+vtfcmd_path = [bt_dir+bt_config["vtfcmd exe"] if bt_config["vtfcmd relative"] else bt_config["vtfcmd exe"]][0]
+
 bset(60,"verifying Package structure...")
 pkg_struct_err = [x for x in pkg_struct_req if not os.path.exists(bt_config["package root"]+x)]
 if len(pkg_struct_err) > 0:
@@ -48,23 +51,20 @@ if len(pkg_struct_err) > 0:
     raise(Exception("\n\nPackage structure failed to validate!\n\nMissing items:\n- %s\n" % str('\n- '.join([bt_config["package root"]+x for x in pkg_struct_err])) ))
 bset(70,"verifying Blender...")
 try:
-    bresult = subprocess.run([bt_dir+bt_config["blender exe"], '-v'], stdout=subprocess.PIPE)
-    if not bresult.stdout == "":
-        print(bresult.stdout)
+    bresult = subprocess.run(['"'+blender_path+'"', '--version','--background'], stdout=subprocess.PIPE)
 except:
-    raise(Exception("\n\nBlender failed to run!\nPlease check config.json to check for any misspellings.\n"))
+    lbar.end()
+    raise(Exception(f"\n\nBlender failed to run!\nPlease check config.json to check for any misspellings.\nBlender path:{blender_path}"))
 #insert test launch here
 bset(80,"verifying VTFCmd...")
 try:
     vresult = subprocess.run([bt_dir+bt_config["vtfcmd exe"], '-help'], stdout=subprocess.PIPE)
-    if not bresult.stdout == "":
-        print(vresult.stdout)
 except:
-    raise(Exception("\n\nVTFCmd failed to run!\nPlease check config.json to check for any misspellings.\n"))
+    lbar.end()
+    raise(Exception(f"\n\nVTFCmd failed to run!\nPlease check config.json to check for any misspellings.\nVTFCmd path:{vtfcmd_path}"))
 bset(100,"setup completed!")
 lbar.setbar(100)
 lbar.end()
-
 for i in sys.argv:
     if (i.endswith("icon.png") or i.endswith("icon.jpg")):
         icon = i
@@ -90,11 +90,17 @@ else:
         print("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
+lbar.begin()
+lbar.setbar(0)
 if not (model == ""):
-    subprocess.run([bt_dir+bt_config["blender exe"], '--python '+bt_dir+bt_config["blender script"]])
-
+    lbar.settext("processing model...")
+    bprocess = subprocess.run([blender_path, '--python '+bt_dir+bt_config["blender script"],'--background','-mi "'+model+'"','-r '+bt_dir+"/temp/icon_rendered.png"],stdout=subprocess.PIPE)
+    lbar.setbar(100)
+    print(bprocess.stdout)
 if (icon != ""):
+    lbar.settext("generating images...")
     saveIcon(icon)
-
+else:
+    saveIcon(bt_dir+"/temp/icon_rendered.png")
 #input("")
 #bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 0, 0), rotation=(0.872665, 0, 0))

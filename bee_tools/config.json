@@ -1,5 +1,8 @@
 {
-	"package root":"/Users/jadon/Downloads/cool package v2",
-	"blender exe":"/exe/blender-2.82a-windows64/blender.exe",
-	"vtfcmd exe":"/exe/VTFLib x64/VTFCmd.exe"
+	"package root":		"/Users/jadon/Downloads/cool package v2",
+	"blender exe":		"/Applications/Blender 2.app/Contents/MacOS/Blender",
+	"blender relative":	false,
+	"blender script":	"/resources/blender_run.py",
+	"vtfcmd exe":		"/exe/VTFLib x64/VTFCmd.exe",
+	"vtfcmd relative":	true
 }

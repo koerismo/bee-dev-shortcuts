@@ -11,7 +11,11 @@ class bar:
         sys.stdout.write(f"[{'-'*self.blen}]")
         sys.stdout.flush()
         sys.stdout.write("\b")
-    def setbar(self,perc):
+    def setbar(self,perc,txt=None):
+        if txt:
+            sys.stdout.write(" "*(len(self.txt)+2))
+            sys.stdout.write("\b"*(len(self.txt)+2))
+            self.txt = txt
         self.perc = perc
         sys.stdout.write("\by\b"*int(self.blen))
         sys.stdout.flush()
@@ -21,8 +25,9 @@ class bar:
         sys.stdout.flush()
         sleep(0.1)
     def settext(self,txt):
-        self.txt = txt
-        self.setbar(self.perc)
+        self.setbar(self.perc,txt)
+        #self.txt = txt
     def end(self):
         sleep(0.1)
         sys.stdout.write("]\n")
+        sys.stdout.flush()
