@@ -28,8 +28,16 @@ pkg_struct_req = [
     "/resources/models/puzzlemaker/"
 ]
 
+def saveIcon(icon):
+    img_icon = Image.open(icon)
+    img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
+    img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
+    img_icon_small.save(bt_dir+'/temp/icon_small.png')
+    img_icon_large.save(bt_dir+'/temp/icon_large.png')
+    subprocess.run([bt_dir+bt_config["vtfcmd exe"], '-input '+bt_dir+"/temp/icon_large.png"])
+
 #get bee_tools dir
-bt_dir = os.path.abspath(__file__+"/..")
+bt_dir = os.path.abspath(__file__+"/../..")
 bset(50,"loading configuration...")
 #load config
 bt_config = json.loads(open(bt_dir+"/config.json","r").read())
@@ -82,6 +90,11 @@ else:
         print("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
+if not (model == ""):
+    subprocess.run([bt_dir+bt_config["blender exe"], '--python '+bt_dir+bt_config["blender script"]])
+
+if (icon != ""):
+    saveIcon(icon)
 
 #input("")
 #bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 0, 0), rotation=(0.872665, 0, 0))
