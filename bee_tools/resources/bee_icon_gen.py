@@ -10,12 +10,14 @@ def bset(br,txt):
     lbar.settext(txt)
     
 import subprocess
-lbar.setbar(10)
+lbar.setbar(8)
 import sys
-lbar.setbar(20)
+lbar.setbar(14)
 import json
-lbar.setbar(30)
+lbar.setbar(20)
 import os
+lbar.setbar(26)
+from PIL import Image
 lbar.setbar(40)
 
 #set vars
@@ -29,12 +31,23 @@ pkg_struct_req = [
 ]
 
 def saveIcon(icon):
+    lbar.setbar(0)
     img_icon = Image.open(icon)
+    lbar.setbar(14)
+    lbar.settext("[icons] resizing...")
     img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
+    lbar.setbar(28)
     img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
+    lbar.setbar(42)
+    lbar.settext("[icons] saving pngs...")
     img_icon_small.save(bt_dir+'/temp/icon_small.png')
+    lbar.setbar(56)
     img_icon_large.save(bt_dir+'/temp/icon_large.png')
+    lbar.setbar(70)
+    lbar.settext("[icons] converting to vtf...")
     subprocess.run(['"'+vtfcmd_path+'"', '-input '+bt_dir+"/temp/icon_large.png",'-output '+bt_dir+"/temp/icon_vtf"])
+    lbar.settext("[icons] finished!")
+    lbar.setbar(100)
 
 #get bee_tools dir
 bt_dir = os.path.abspath(__file__+"/../..")
@@ -80,6 +93,7 @@ if (texture == ""): #if there is no icon, treat any image as an texture
             break
 if (model == ""):
     if (icon == "" and texture == ""):
+        #print(sys.argv)
         print("Nothing to process! Aborting...")
         exit()
     else:
@@ -94,13 +108,25 @@ lbar.begin()
 lbar.setbar(0)
 if not (model == ""):
     lbar.settext("processing model...")
-    bprocess = subprocess.run([blender_path, '--python '+bt_dir+bt_config["blender script"],'--background','-mi "'+model+'"','-r '+bt_dir+"/temp/icon_rendered.png"],stdout=subprocess.PIPE)
+    try:
+        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-o',bt_dir+'/temp/icon_rendered.png','-x','1','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
+    except:
+        bset(0,"an error occurred in blender!")
+        lbar.end()
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\nIf this issue persists, please submit an issue!'))
+    if (bprocess.returncode == 1):
+        bset(0,"an error occurred in blender!")
+        lbar.end()
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\nIf this issue persists, please submit an issue!'))
     lbar.setbar(100)
-    print(bprocess.stdout)
+    lbar.end()
+lbar.begin()
+lbar.settext(" ")
 if (icon != ""):
     lbar.settext("generating images...")
     saveIcon(icon)
 else:
-    saveIcon(bt_dir+"/temp/icon_rendered.png")
+    saveIcon(bt_dir+"\\temp\\icon_rendered.png")
+lbar.end()
 #input("")
 #bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 0, 0), rotation=(0.872665, 0, 0))
