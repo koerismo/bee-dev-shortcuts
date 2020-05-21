@@ -7,6 +7,7 @@ things required
 - Python 3.7+
 - Blender 2.8
 - Windows
+- Pillow library
 
 # Usage
 ### Be sure to modify config.json before using.
