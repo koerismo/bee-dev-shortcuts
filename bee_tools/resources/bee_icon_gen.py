@@ -115,13 +115,24 @@ else:
         logging.warn("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
+item_name = input("\nitem name: ")
 lbar.begin()
 lbar.setbar(0)
 if not (model == ""):
     lbar.settext("processing model...")
     try:
-        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-x','0','--python-exit-code','1','--python',bt_dir+bt_config["blender script"],'--','-mi',model,'-tx',texture],stdout=subprocess.PIPE)
-        #print(bprocess.stdout)
+        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend',
+                                   '-x','0',
+                                   '--python-exit-code','1',
+                                   '--python',bt_dir+bt_config["blender script"],
+                                   '--',
+                                   '-mi',model,
+                                   '-tx',texture,
+                                   '-mo',bt_dir+"\\temp\\model_smd",
+                                   '-ep',bt_config["portal 2 bin folder"],
+                                   '-mn',item_name+"_mat.vmt"
+                                   ],stdout=subprocess.PIPE)
+        print(bprocess.stdout)
     except: #'-f','0','-o',bt_dir+'/temp/icon_rendered.png','--debug-python',
         bset(0,"an error occurred in blender!")
         lbar.end()
