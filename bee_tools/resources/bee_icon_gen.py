@@ -51,7 +51,7 @@ if len(pkg_struct_err) > 0:
     raise(Exception("\n\nPackage structure failed to validate!\n\nMissing items:\n- %s\n" % str('\n- '.join([bt_config["package root"]+x for x in pkg_struct_err])) ))
 bset(70,"verifying Blender...")
 try:
-    bresult = subprocess.run(['"'+blender_path+'"', '--version','--background'], stdout=subprocess.PIPE)
+    bresult = subprocess.run([blender_path, '--version','--background'], stdout=subprocess.PIPE)
 except:
     lbar.end()
     raise(Exception(f"\n\nBlender failed to run!\nPlease check config.json to check for any misspellings.\nBlender path:{blender_path}"))

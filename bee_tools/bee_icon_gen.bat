@@ -1,1 +1,1 @@
-python3 bee_icon_gen.py "$0" "$1" "$2"
+python3 %~dp0/resources/bee_icon_gen.py "$0" "$1" "$2"
