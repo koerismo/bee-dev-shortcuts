@@ -1,5 +1,5 @@
 print("Starting Bee Item Helper...")
-error_persist_message = "If this issue persists, please submit an issue."
+error_persist_message = "If this issue persists, please submit an issue.\n\n"
 #load resources
 import loadingbar, logging #lmao we have to preload the loading bar
 lbar = loadingbar.bar(15)
@@ -8,7 +8,6 @@ lbar.settext("Loading modules...")
 def bset(br,txt):
     lbar.setbar(br)
     lbar.settext(txt)
-    
 import subprocess
 lbar.setbar(8)
 import sys
@@ -30,6 +29,8 @@ pkg_struct_req = [
     "/resources/models/puzzlemaker/"
 ]
 
+def reformatError(er):
+    return str("\n".join(map(str,str(er).split("\\n"))))
 def saveIcon(icon):
     lbar.setbar(0)
     img_icon = Image.open(icon)
@@ -45,9 +46,15 @@ def saveIcon(icon):
     img_icon_large.save(bt_dir+'/temp/icon_large.png')
     lbar.setbar(70)
     lbar.settext("[icons] converting to vtf...")
-    subprocess.run(['"'+vtfcmd_path+'"', '-input '+bt_dir+"/temp/icon_large.png",'-output '+bt_dir+"/temp/icon_vtf"])
+    lbar.end()
+    vprocess = subprocess.run([vtfcmd_path, '-file',bt_dir+"\\temp\\icon_large.png",'-output',bt_dir+"\\temp"],stdout=subprocess.PIPE)
+    if (not os.path.isfile(bt_dir+"\\temp\\icon_large.vtf")):
+        logging.exception(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nOutput message:\n\n{reformatError(vprocess.stdout)}\n\n{error_persist_message}")
+        exit()
+    lbar.begin()
     lbar.settext("[icons] finished!")
     lbar.setbar(100)
+    lbar.end()
 
 #get bee_tools dir
 bt_dir = os.path.abspath(__file__+"/../..")
@@ -67,7 +74,7 @@ try:
     bresult = subprocess.run([blender_path, '--version','--background'], stdout=subprocess.PIPE)
 except Exception as e:
     lbar.end()
-    logging.error(f"\n\nBlender failed to run!\nBlender path:{blender_path}\nError message:\n\n{e}\n\n{error_persist_message}")
+    logging.exception(f"\n\nBlender failed to run!\nBlender path:{blender_path}\nError message:\n\n{e}\n\n{error_persist_message}")
     exit()
 #insert test launch here
 bset(80,"verifying VTFCmd...")
@@ -75,7 +82,7 @@ try:
     vresult = subprocess.run([bt_dir+bt_config["vtfcmd exe"], '-help'], stdout=subprocess.PIPE)
 except Exception as e:
     lbar.end()
-    logging.error(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nError message:\n\n{e}\n\n{error_persist_message}")
+    logging.exception(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nError message:\n\n{e}\n\n{error_persist_message}")
     exit()
 bset(100,"setup completed!")
 lbar.setbar(100)
@@ -113,15 +120,15 @@ lbar.setbar(0)
 if not (model == ""):
     lbar.settext("processing model...")
     try:
-        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-o',bt_dir+'/temp/icon_rendered.png','-x','0','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
+        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-f','0','-o',bt_dir+'/temp/icon_rendered.png','-x','0','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
     except:
         bset(0,"an error occurred in blender!")
         lbar.end()
-        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\n'+error_persist_message))
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+reformatError(bprocess.stdout)+'\n\n'+error_persist_message))
     if (bprocess.returncode == 1):
         bset(0,"an error occurred in blender!")
         lbar.end()
-        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\n'+error_persist_message))
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+reformatError(bprocess.stdout)+'\n\n'+error_persist_message))
     lbar.setbar(100)
     lbar.end()
 lbar.begin()
@@ -131,10 +138,10 @@ try:
         lbar.settext("generating images...")
         saveIcon(icon)
     else:
-        saveIcon(bt_dir+"\\temp\\icon_rendered.png")
+        saveIcon(bt_dir+"\\temp\\icon_rendered0000.png")
 except Exception as e:
     lbar.end()
-    logging.error('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
+    logging.exception('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
     exit()
 lbar.end()
 #input("")
