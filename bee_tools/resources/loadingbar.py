@@ -17,17 +17,16 @@ class bar:
             sys.stdout.write("\b"*(len(self.txt)+2))
             self.txt = txt
         self.perc = perc
-        sys.stdout.write("\by\b"*int(self.blen))
+        sys.stdout.write("\b"*int(self.blen))
         sys.stdout.flush()
         sys.stdout.write("█"*int(self.blen*perc/100))
         sys.stdout.write("-"*(self.blen-int(self.blen*perc/100))+"] "+self.txt)
         sys.stdout.write("\b"*(len(self.txt)+2))
         sys.stdout.flush()
-        sleep(0.1)
     def settext(self,txt):
         self.setbar(self.perc,txt)
         #self.txt = txt
     def end(self):
         sleep(0.1)
-        sys.stdout.write("]\n")
+        sys.stdout.write("]\n\n")
         sys.stdout.flush()

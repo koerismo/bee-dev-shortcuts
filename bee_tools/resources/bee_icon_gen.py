@@ -1,7 +1,7 @@
 print("Starting Bee Item Helper...")
-
+error_persist_message = "If this issue persists, please submit an issue."
 #load resources
-import loadingbar #lmao we have to preload the loading bar
+import loadingbar, logging #lmao we have to preload the loading bar
 lbar = loadingbar.bar(15)
 lbar.begin()
 lbar.settext("Loading modules...")
@@ -65,20 +65,24 @@ if len(pkg_struct_err) > 0:
 bset(70,"verifying Blender...")
 try:
     bresult = subprocess.run([blender_path, '--version','--background'], stdout=subprocess.PIPE)
-except:
+except Exception as e:
     lbar.end()
-    raise(Exception(f"\n\nBlender failed to run!\nPlease check config.json to check for any misspellings.\nBlender path:{blender_path}"))
+    logging.error(f"\n\nBlender failed to run!\nBlender path:{blender_path}\nError message:\n\n{e}\n\n{error_persist_message}")
+    exit()
 #insert test launch here
 bset(80,"verifying VTFCmd...")
 try:
     vresult = subprocess.run([bt_dir+bt_config["vtfcmd exe"], '-help'], stdout=subprocess.PIPE)
-except:
+except Exception as e:
     lbar.end()
-    raise(Exception(f"\n\nVTFCmd failed to run!\nPlease check config.json to check for any misspellings.\nVTFCmd path:{vtfcmd_path}"))
+    logging.error(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nError message:\n\n{e}\n\n{error_persist_message}")
+    exit()
 bset(100,"setup completed!")
 lbar.setbar(100)
 lbar.end()
 for i in sys.argv:
+    if not (os.path.isfile(i)):
+        continue;
     if (i.endswith("icon.png") or i.endswith("icon.jpg")):
         icon = i
     if (i.endswith("texture.png") or i.endswith("texture.jpg")):
@@ -94,14 +98,14 @@ if (texture == ""): #if there is no icon, treat any image as an texture
 if (model == ""):
     if (icon == "" and texture == ""):
         #print(sys.argv)
-        print("Nothing to process! Aborting...")
+        logging.warn("Nothing to process! Aborting...")
         exit()
     else:
         icon = texture #transfer default to icon if there is no model
         print("No model detected. Skipping...")
 else:
     if (icon == "" and texture == ""):
-        print("Your model is missing textures! Aborting...")
+        logging.warn("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
 lbar.begin()
@@ -109,24 +113,29 @@ lbar.setbar(0)
 if not (model == ""):
     lbar.settext("processing model...")
     try:
-        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-o',bt_dir+'/temp/icon_rendered.png','-x','1','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
+        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-o',bt_dir+'/temp/icon_rendered.png','-x','0','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
     except:
         bset(0,"an error occurred in blender!")
         lbar.end()
-        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\nIf this issue persists, please submit an issue!'))
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\n'+error_persist_message))
     if (bprocess.returncode == 1):
         bset(0,"an error occurred in blender!")
         lbar.end()
-        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\nIf this issue persists, please submit an issue!'))
+        raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+str("\n".join(map(str,str(bprocess.stdout).split("\\n"))))+'\n\n'+error_persist_message))
     lbar.setbar(100)
     lbar.end()
 lbar.begin()
-lbar.settext(" ")
-if (icon != ""):
-    lbar.settext("generating images...")
-    saveIcon(icon)
-else:
-    saveIcon(bt_dir+"\\temp\\icon_rendered.png")
+lbar.settext("processing images...")
+try:
+    if (icon != ""):
+        lbar.settext("generating images...")
+        saveIcon(icon)
+    else:
+        saveIcon(bt_dir+"\\temp\\icon_rendered.png")
+except Exception as e:
+    lbar.end()
+    logging.error('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
+    exit()
 lbar.end()
 #input("")
 #bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 0, 0), rotation=(0.872665, 0, 0))
