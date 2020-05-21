@@ -1,40 +1,29 @@
-# This script is an example of how you can run blender from the command line
-# (in background mode with no interface) to automate tasks, in this example it
-# creates a text object, camera and light, then renders and/or saves it.
-# This example also shows how you can parse command line options to scripts.
-#
-# Example usage for this test.
-#  blender --background --factory-startup --python $HOME/background_job.py -- \
-#          --text="Hello World" \
-#          --render="/tmp/hello" \
-#          --save="/tmp/hello.blend"
-#
-# Notice:
-# '--factory-startup' is used to avoid the user default settings from
-#                     interfering with automated scene generation.
-#
-# '--' causes blender to ignore all following arguments so python can use them.
-#
-# See blender --help for details.
-
-
 import bpy
 from os import path
 
-def example_function(model_in, save_path, render_path):
+def example_function(model_in, arg_img):
     # Clear existing objects.
 
-    bpy.ops.import_scene.obj(filepath=path.abspath(model_in), axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
-
-    if save_path:
-        bpy.ops.wm.save_as_mainfile(filepath=save_path)
-
-    if render_path:
-        render = scene.render
-        render.use_file_extension = True
-        render.filepath = render_path
-        bpy.ops.render.render(write_still=True)
-
+    try:
+        #my_model = bpy.ops.import_scene.obj(filepath=path.abspath(model_in), axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
+        my_model = bpy.ops.import_scene.obj(filepath=model_in, filter_glob="*.obj", use_image_search=False)
+        mdl = bpy.data.objects["Cube"]
+        
+        mat_new = bpy.data.materials.new("mat_default")
+        mat_new.use_nodes = True
+        
+        bsdf = mat_new.node_tree.nodes["Principled BSDF"]
+        mat_tex = mat_new.node_tree.nodes.new('ShaderNodeTexImage')
+        mat_tex.image = bpy.data.images.load(filepath = arg_img)
+        mat_new.node_tree.links.new(bsdf.inputs['Base Color'], mat_tex.outputs['Color'])
+        
+        mdl.data.materials[0] = (mat_new)
+        
+        bpy.context.scene.render.filepath = '//../../bee_tools/temp/icon_rendered.png'
+        bpy.ops.render.render(write_still = True)
+    except Exception as e:
+        print("\n\n\nERROR: "+str(e)+"\n\n\n")
+        exit()
 
 def main():
     import sys       # to get command line args
@@ -61,16 +50,12 @@ def main():
     # Possible types are: string, int, long, choice, float and complex.
     parser.add_argument(
         "-mi", "--model_in", dest="model_in", type=str, required=True,
-        help="This text will be used to render an image",
+        help="Model in",
     )
 
     parser.add_argument(
-        "-s", "--save", dest="save_path", metavar='FILE',
-        help="Save the generated file to the specified path",
-    )
-    parser.add_argument(
-        "-r", "--render", dest="render_path", metavar='FILE',
-        help="Render an image to the specified path",
+        "-tx", "--texture_in", dest="texture_in", metavar='FILE',
+        help="Texture in",
     )
 
     args = parser.parse_args(argv)  # In this example we won't use the args
@@ -85,9 +70,7 @@ def main():
         return
 
     # Run the example function
-    example_function(args.model_in, args.save_path, args.render_path)
-
-    print("batch job finished, exiting")
+    example_function(args.model_in, args.texture_in)
 
 
 if __name__ == "__main__":

@@ -120,8 +120,9 @@ lbar.setbar(0)
 if not (model == ""):
     lbar.settext("processing model...")
     try:
-        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-f','0','-o',bt_dir+'/temp/icon_rendered.png','-x','0','--python',bt_dir+bt_config["blender script"],'--','-mi',model],stdout=subprocess.PIPE)
-    except:
+        bprocess = subprocess.run([blender_path,'-b',bt_dir+'/resources/default.blend','-x','0','--python-exit-code','1','--python',bt_dir+bt_config["blender script"],'--','-mi',model,'-tx',texture],stdout=subprocess.PIPE)
+        #print(bprocess.stdout)
+    except: #'-f','0','-o',bt_dir+'/temp/icon_rendered.png','--debug-python',
         bset(0,"an error occurred in blender!")
         lbar.end()
         raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+reformatError(bprocess.stdout)+'\n\n'+error_persist_message))
@@ -138,7 +139,7 @@ try:
         lbar.settext("generating images...")
         saveIcon(icon)
     else:
-        saveIcon(bt_dir+"\\temp\\icon_rendered0000.png")
+        saveIcon(bt_dir+"\\temp\\icon_rendered.png")
 except Exception as e:
     lbar.end()
     logging.exception('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
