@@ -105,14 +105,14 @@ if (texture == ""): #if there is no icon, treat any image as an texture
 if (model == ""):
     if (icon == "" and texture == ""):
         #print(sys.argv)
-        logging.warn("Nothing to process! Aborting...")
+        print("Nothing to process! Aborting...")
         exit()
     else:
         icon = texture #transfer default to icon if there is no model
         print("No model detected. Skipping...")
 else:
     if (icon == "" and texture == ""):
-        logging.warn("Your model is missing textures! Aborting...")
+        print("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
 item_name = input("\nitem name: ")
