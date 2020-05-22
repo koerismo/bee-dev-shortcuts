@@ -1,5 +1,5 @@
 {
-	"package root":		"C:\\Users\\Jadon\\Documents\\GitHub\\QOL-BEE\\BEEQOL",
+	"package root":		"C:\\Users\\Jadon\\Downloads\\Test Package",
 	"blender exe":		"\\exe\\blender-2.82a-windows64\\blender.exe",
 	"blender relative":	true,
 	"blender script":	"\\resources\\blender_run.py",

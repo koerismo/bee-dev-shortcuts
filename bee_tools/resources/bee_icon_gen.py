@@ -20,6 +20,7 @@ from PIL import Image
 lbar.setbar(40)
 import gen_qc
 from pathlib import Path
+import shutil
 
 #set vars
 icon = ""
@@ -163,13 +164,14 @@ if (not os.path.isfile(bt_dir+"\\temp\\icon_large.vtf")):
     logging.exception(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nOutput message:\n\n{reformatError(vprocess.stdout)}\n\n{error_persist_message}")
     exit()
 #copy converted vtf to package directory
-print("copying vtf model texture to package...")
+print("\n\ncopying vtf model texture to package...\n")
+Path(f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vtf').mkdir(parents=True, exist_ok=True)
 subprocess.run(['copy',
                 f'{bt_dir}\\temp\\item_texture.vtf',
                 f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vtf'],shell=True)
 
 #create vmt
-print("creating vmt in package...")
+print("\n\ncreating vmt in package...\n")
 Path(bt_config["package root"]+f"\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}").mkdir(parents=True, exist_ok=True)
 gen_qc.saveVMT(
     f"BEE2\models\props_map_editor\{pkg_name}\{item_name}_mat.vtf",
@@ -186,7 +188,7 @@ qc_properties = {
     #"export_path":bt_config["portal 2 folder"]+"\\portal2\\models"+bt_config["temp model folder"]
 }
 gen_qc.saveQC(qc_properties,bt_dir+"\\temp\\Collection.qc")
-print("compiling model...")
+print("\n\ncompiling model...\n")
 #compile model
 try:
     stprocess = subprocess.run([f'{bt_config["portal 2 folder"]}\\bin\\studiomdl.exe',
@@ -198,8 +200,34 @@ try:
         exit()
 except Exception as e:
     logging.exception('\n\nAn error occurred during model compilation.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
+
+#copy icons to package
+print("\n\ncopying icons to package folder...\n")
+
+#copy bee2 icon
+Path(bt_config["package root"]+f'\\resources\\BEE2\\items\\{pkg_name}').mkdir(parents=True, exist_ok=True)
+shutil.copy(bt_dir+"\\temp\\icon_small.png",
+bt_config["package root"]+f'\\resources\\BEE2\\items\\{pkg_name}\\{item_name}.png')
+
+#copy ingame icon
+Path(bt_config["package root"]+f'\\resources\\materials\\models\\props_map_editor\\palette\\bee2\\{pkg_name}').mkdir(parents=True, exist_ok=True)
+shutil.copy(bt_dir+"\\temp\\icon_large.vtf",
+bt_config["package root"]+f'\\resources\\materials\\models\\props_map_editor\\palette\\bee2\\{pkg_name}\\{item_name}.vtf')
+    
 #copy model folder to temp
-print("copying compiled models to temp folder...")
-subprocess.run(['copy',
-                f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}',
-                f'{bt_dir}\\temp\\compiled'],shell=True)
+print("\n\ncopying compiled models to temp folder...\n")
+shutil.copytree( #yep, i have to use this.
+    f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}',
+    f'{bt_dir}\\temp\\compiled'
+    )
+print("\n\ncopying models from temp to package...\n")
+#rename all files
+mp_path = os.path.abspath(f'{bt_dir}\\temp\\compiled')+"\\"
+Path(bt_config["package root"]+f"\\resources\\models\\props_map_editor\\{pkg_name}").mkdir(parents=True, exist_ok=True)
+for x in os.listdir(mp_path):
+    print(f"copying {mp_path+x}...")
+    shutil.copy(mp_path+x,
+f'{bt_config["package root"]}\\resources\\models\\props_map_editor\\{pkg_name}\\{x.replace("temp",item_name)}')
+
+print("\n\nFinished processing! All resources exported to package.\n")
+input("")
