@@ -156,6 +156,20 @@ except Exception as e:
     exit()
 lbar.end()
 
+#copy texture to temp and rename
+subprocess.run(f'copy {texture} {bt_dir}\\temp\\item_texture.png',shell=True)
+vprocess = subprocess.run([vtfcmd_path, '-file',bt_dir+"\\temp\\item_texture.png",'-output',bt_dir+"\\temp\\"])
+if (not os.path.isfile(bt_dir+"\\temp\\icon_large.vtf")):
+    logging.exception(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nOutput message:\n\n{reformatError(vprocess.stdout)}\n\n{error_persist_message}")
+    exit()
+#copy converted vtf to package directory
+print("copying vtf model texture to package...")
+subprocess.run(['copy',
+                f'{bt_dir}\\temp\\item_texture.vtf',
+                f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vtf'],shell=True)
+
+#create vmt
+print("creating vmt in package...")
 Path(bt_config["package root"]+f"\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}").mkdir(parents=True, exist_ok=True)
 gen_qc.saveVMT(
     f"BEE2\models\props_map_editor\{pkg_name}\{item_name}_mat.vtf",
@@ -164,7 +178,7 @@ gen_qc.saveVMT(
 #convert texture to vtf, create vmt, and place into directory
 #vtf directory: "resources\materials\BEE2\models\props_map_editor\{pkg_name}\{item_name}_mat.vtf"
 
-
+#generate qc
 qc_properties = {
     "export_path":bt_config["temp model folder"]+"\\temp.mdl",
     "cd_mats":"BEE2\\models\\props_map_editor\\"+pkg_name.lower()+"\\",
@@ -172,6 +186,8 @@ qc_properties = {
     #"export_path":bt_config["portal 2 folder"]+"\\portal2\\models"+bt_config["temp model folder"]
 }
 gen_qc.saveQC(qc_properties,bt_dir+"\\temp\\Collection.qc")
+print("compiling model...")
+#compile model
 try:
     stprocess = subprocess.run([f'{bt_config["portal 2 folder"]}\\bin\\studiomdl.exe',
                                 f'-game',f'{bt_config["portal 2 folder"]}\\portal2',
@@ -182,3 +198,8 @@ try:
         exit()
 except Exception as e:
     logging.exception('\n\nAn error occurred during model compilation.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
+#copy model folder to temp
+print("copying compiled models to temp folder...")
+subprocess.run(['copy',
+                f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}',
+                f'{bt_dir}\\temp\\compiled'],shell=True)
