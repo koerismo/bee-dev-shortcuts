@@ -30,4 +30,8 @@ that's the entire thing. To use, launch `bee_tools/resources/bee_icon_gen.py` wi
 Examples:
 
 `python3 bee_icon_gen.py "my_image.png" "my_obj.obj"`
+
 `python3 bee_icon_gen.py "my_obj.obj" "my_image.png"`
+
+
+When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your package name.
