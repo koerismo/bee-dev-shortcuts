@@ -19,6 +19,7 @@ lbar.setbar(26)
 from PIL import Image
 lbar.setbar(40)
 import gen_qc
+from pathlib import Path
 
 #set vars
 icon = ""
@@ -131,12 +132,12 @@ if not (model == ""):
                                    '-ep',bt_config["portal 2 folder"]+"\\bin\\",
                                    '-mn',item_name+"_mat.vmt"
                                    ],stdout=subprocess.PIPE)
-        print(bprocess.stdout)
+        #print(bprocess.stdout)
     except: #'-f','0','-o',bt_dir+'/temp/icon_rendered.png','--debug-python',
         bset(0,"an error occurred in blender!")
         lbar.end()
         raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+reformatError(bprocess.stdout)+'\n\n'+error_persist_message))
-    if (bprocess.returncode == 1):
+    if (bprocess.returncode != 0):
         bset(0,"an error occurred in blender!")
         lbar.end()
         raise(Exception('\n\nAn error occurred in Blender.\nError:\n\n'+reformatError(bprocess.stdout)+'\n\n'+error_persist_message))
@@ -154,6 +155,16 @@ except Exception as e:
     logging.exception('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
     exit()
 lbar.end()
+
+Path(bt_config["package root"]+f"\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}").mkdir(parents=True, exist_ok=True)
+gen_qc.saveVMT(
+    f"BEE2\models\props_map_editor\{pkg_name}\{item_name}_mat.vtf",
+    bt_config["package root"]+f"\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vmt"
+    )
+#convert texture to vtf, create vmt, and place into directory
+#vtf directory: "resources\materials\BEE2\models\props_map_editor\{pkg_name}\{item_name}_mat.vtf"
+
+
 qc_properties = {
     "export_path":bt_config["temp model folder"]+"\\temp.mdl",
     "cd_mats":"BEE2\\models\\props_map_editor\\"+pkg_name.lower()+"\\",
@@ -166,9 +177,8 @@ try:
                                 f'-game',f'{bt_config["portal 2 folder"]}\\portal2',
                                 f'{bt_dir}\\temp\\Collection.qc'
                                    ],stdout=subprocess.PIPE)
-    if (stprocess.returncode == 1):
+    if (stprocess.returncode != 0):
         print(stprocess.stdout)
         exit()
 except Exception as e:
     logging.exception('\n\nAn error occurred during model compilation.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
-

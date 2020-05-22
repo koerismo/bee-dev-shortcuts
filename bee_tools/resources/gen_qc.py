@@ -12,3 +12,11 @@ $cbox 0 0 0 0 0 0
 $sequence "idle" "{props['smd_path']}"
 ''')
     q.close()
+
+def saveVMT(tex_path,di):
+    q = open(di,"w")
+    q.write('''UnLitGeneric
+{
+    $baseTexture "'''+tex_path+'''"
+}''')
+    q.close()

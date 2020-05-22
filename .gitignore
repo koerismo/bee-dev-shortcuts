@@ -2,3 +2,4 @@
 .DS_Store
 bee_tools/exe/blender-2.82a-windows64/*
 bee_tools/resources/__pycache__/*
+bee_tools/temp/*
