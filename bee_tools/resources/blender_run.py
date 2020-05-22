@@ -4,9 +4,8 @@ from os import path
 
 def example_function(model_in, arg_img,model_out,engine_path,mat_name):
     # Clear existing objects.
-
+    addon_utils.enable("io_scene_valvesource")
     try:
-        addon_utils.enable("io_scene_valvesource")
         #my_model = bpy.ops.import_scene.obj(filepath=path.abspath(model_in), axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
         my_model = bpy.ops.import_scene.obj(filepath=model_in, filter_glob="*.obj", use_image_search=False)
         mdl = bpy.data.objects[0] #3 == floor
@@ -22,10 +21,12 @@ def example_function(model_in, arg_img,model_out,engine_path,mat_name):
         mdl.data.materials[0] = (mat_new)
         
         bpy.context.scene.render.filepath = '//../../bee_tools/temp/icon_rendered.png'
-        bpy.ops.render.render(write_still = True)
         bpy.context.scene.vs.export_format = 'SMD'
+        bpy.context.scene.vs.export_path = model_out
         bpy.context.scene.vs.engine_path = engine_path
+        bpy.ops.render.render(write_still = True)
         bpy.ops.export_scene.smd(collection="Collection")
+
     except Exception as e:
         print("\n\n\nERROR: "+str(e)+"\n\n\n")
         #exit()

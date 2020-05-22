@@ -128,7 +128,7 @@ if not (model == ""):
                                    '--',
                                    '-mi',model,
                                    '-tx',texture,
-                                   '-mo',bt_dir+"\\temp\\model_smd",
+                                   '-mo',bt_dir+"\\temp",
                                    '-ep',bt_config["portal 2 bin folder"],
                                    '-mn',item_name+"_mat.vmt"
                                    ],stdout=subprocess.PIPE)
