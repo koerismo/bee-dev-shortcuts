@@ -165,7 +165,7 @@ if (not os.path.isfile(bt_dir+"\\temp\\icon_large.vtf")):
     exit()
 #copy converted vtf to package directory
 print("\n\ncopying vtf model texture to package...\n")
-Path(f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vtf').mkdir(parents=True, exist_ok=True)
+Path(f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}').mkdir(parents=True, exist_ok=True)
 subprocess.run(['copy',
                 f'{bt_dir}\\temp\\item_texture.vtf',
                 f'{bt_config["package root"]}\\resources\\materials\\BEE2\models\\props_map_editor\\{pkg_name}\\{item_name}_mat.vtf'],shell=True)
@@ -228,6 +228,11 @@ for x in os.listdir(mp_path):
     print(f"copying {mp_path+x}...")
     shutil.copy(mp_path+x,
 f'{bt_config["package root"]}\\resources\\models\\props_map_editor\\{pkg_name}\\{x.replace("temp",item_name)}')
+
+print("\n\nCleaning up...")
+shutil.rmtree(bt_dir+"\\temp\\")
+os.makedirs(bt_dir+"\\temp\\")
+shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}')
 
 print("\n\nFinished processing! All resources exported to package.\n")
 input("")
