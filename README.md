@@ -1,5 +1,5 @@
-# bee-dev-shortcuts
-some tools to make bee packages less painful
+# bee-dev-tool
+a tool to make bee packages less painful
 
 # this doesn't work yet.
 
