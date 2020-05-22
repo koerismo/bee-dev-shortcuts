@@ -182,7 +182,7 @@ gen_qc.saveVMT(
 
 #generate qc
 qc_properties = {
-    "export_path":bt_config["temp model folder"]+"\\temp.mdl",
+    "export_path":f'props_map_editor\\{pkg_name}\\temp.mdl',
     "cd_mats":"BEE2\\models\\props_map_editor\\"+pkg_name.lower()+"\\",
     "smd_path":bt_dir+"\\temp\\Collection.smd"
     #"export_path":bt_config["portal 2 folder"]+"\\portal2\\models"+bt_config["temp model folder"]
@@ -190,6 +190,7 @@ qc_properties = {
 gen_qc.saveQC(qc_properties,bt_dir+"\\temp\\Collection.qc")
 print("\n\ncompiling model...\n")
 #compile model
+Path(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}').mkdir(parents=True, exist_ok=True)
 try:
     stprocess = subprocess.run([f'{bt_config["portal 2 folder"]}\\bin\\studiomdl.exe',
                                 f'-game',f'{bt_config["portal 2 folder"]}\\portal2',
@@ -217,7 +218,7 @@ bt_config["package root"]+f'\\resources\\materials\\models\\props_map_editor\\pa
 #copy model folder to temp
 print("\n\ncopying compiled models to temp folder...\n")
 shutil.copytree( #yep, i have to use this.
-    f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}',
+    f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}',
     f'{bt_dir}\\temp\\compiled'
     )
 print("\n\ncopying models from temp to package...\n")
