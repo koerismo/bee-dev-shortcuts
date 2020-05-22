@@ -18,6 +18,7 @@ import os
 lbar.setbar(26)
 from PIL import Image
 lbar.setbar(40)
+import gen_qc
 
 #set vars
 icon = ""
@@ -46,12 +47,10 @@ def saveIcon(icon):
     img_icon_large.save(bt_dir+'/temp/icon_large.png')
     lbar.setbar(70)
     lbar.settext("[icons] converting to vtf...")
-    lbar.end()
     vprocess = subprocess.run([vtfcmd_path, '-file',bt_dir+"\\temp\\icon_large.png",'-output',bt_dir+"\\temp"],stdout=subprocess.PIPE)
     if (not os.path.isfile(bt_dir+"\\temp\\icon_large.vtf")):
         logging.exception(f"\n\nVTFCmd failed to run!\nVTFCmd path:{vtfcmd_path}\nOutput message:\n\n{reformatError(vprocess.stdout)}\n\n{error_persist_message}")
         exit()
-    lbar.begin()
     lbar.settext("[icons] finished!")
     lbar.setbar(100)
     lbar.end()
@@ -63,7 +62,7 @@ bset(50,"loading configuration...")
 bt_config = json.loads(open(bt_dir+"/config.json","r").read())
 blender_path = [bt_dir+bt_config["blender exe"] if bt_config["blender relative"] else bt_config["blender exe"]][0]
 vtfcmd_path = [bt_dir+bt_config["vtfcmd exe"] if bt_config["vtfcmd relative"] else bt_config["vtfcmd exe"]][0]
-
+pkg_name = "_".join((os.path.split(bt_config["package root"])[-1]).lower().split(" "))
 bset(60,"verifying Package structure...")
 pkg_struct_err = [x for x in pkg_struct_req if not os.path.exists(bt_config["package root"]+x)]
 if len(pkg_struct_err) > 0:
@@ -129,7 +128,7 @@ if not (model == ""):
                                    '-mi',model,
                                    '-tx',texture,
                                    '-mo',bt_dir+"\\temp",
-                                   '-ep',bt_config["portal 2 bin folder"],
+                                   '-ep',bt_config["portal 2 folder"]+"\\bin\\",
                                    '-mn',item_name+"_mat.vmt"
                                    ],stdout=subprocess.PIPE)
         print(bprocess.stdout)
@@ -144,10 +143,9 @@ if not (model == ""):
     lbar.setbar(100)
     lbar.end()
 lbar.begin()
-lbar.settext("processing images...")
+lbar.settext("processing icons...")
 try:
     if (icon != ""):
-        lbar.settext("generating images...")
         saveIcon(icon)
     else:
         saveIcon(bt_dir+"\\temp\\icon_rendered.png")
@@ -156,5 +154,21 @@ except Exception as e:
     logging.exception('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
     exit()
 lbar.end()
-#input("")
-#bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 0, 0), rotation=(0.872665, 0, 0))
+qc_properties = {
+    "export_path":bt_config["temp model folder"]+"\\temp.mdl",
+    "cd_mats":"BEE2\\models\\props_map_editor\\"+pkg_name.lower()+"\\",
+    "smd_path":bt_dir+"\\temp\\Collection.smd"
+    #"export_path":bt_config["portal 2 folder"]+"\\portal2\\models"+bt_config["temp model folder"]
+}
+gen_qc.saveQC(qc_properties,bt_dir+"\\temp\\Collection.qc")
+try:
+    stprocess = subprocess.run([f'{bt_config["portal 2 folder"]}\\bin\\studiomdl.exe',
+                                f'-game',f'{bt_config["portal 2 folder"]}\\portal2',
+                                f'{bt_dir}\\temp\\Collection.qc'
+                                   ],stdout=subprocess.PIPE)
+    if (stprocess.returncode == 1):
+        print(stprocess.stdout)
+        exit()
+except Exception as e:
+    logging.exception('\n\nAn error occurred during model compilation.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
+

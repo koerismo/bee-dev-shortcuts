@@ -26,7 +26,9 @@ def example_function(model_in, arg_img,model_out,engine_path,mat_name):
         bpy.context.scene.vs.engine_path = engine_path
         bpy.ops.render.render(write_still = True)
         bpy.ops.export_scene.smd(collection="Collection")
-
+        mdl.scale = (1/64,1/64,1/64)
+        mdl.rotation_euler = (0,0,90)
+        #TODO: find a way to export 3ds models from 2.8
     except Exception as e:
         print("\n\n\nERROR: "+str(e)+"\n\n\n")
         #exit()

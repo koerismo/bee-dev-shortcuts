@@ -8,6 +8,7 @@ class bar:
         self.txt = ""
         self.perc = 0
     def begin(self):
+        self.perc = 0
         sys.stdout.write(f"[{'-'*self.blen}]")
         sys.stdout.flush()
         sys.stdout.write("\b")

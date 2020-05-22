@@ -1,0 +1,5 @@
+VTFCmd was found on an archived version of the Nem's Tools website
+[link]
+
+The Blender 2.8 3ds I/O addon was found on the Blender development forums
+[https://developer.blender.org/T66329]
