@@ -8,8 +8,9 @@ def example_function(model_in, arg_img,model_out,engine_path,mat_name):
     try:
         #my_model = bpy.ops.import_scene.obj(filepath=path.abspath(model_in), axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
         my_model = bpy.ops.import_scene.obj(filepath=model_in, filter_glob="*.obj", use_image_search=False)
-        mdl = bpy.data.objects[0] #3 == floor
-        
+        #mdl = bpy.data.objects[0] #3 == floor
+        #mdl = bpy.data.collections['Collection'].all_objects[0]
+        mdl = bpy.context.collection.objects[0]
         mat_new = bpy.data.materials.new(mat_name)
         mat_new.use_nodes = True
         

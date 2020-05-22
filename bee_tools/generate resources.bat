@@ -1,1 +1,0 @@
-python3 "%~dp0/resources/bee_icon_gen.py" $@
