@@ -155,7 +155,6 @@ except Exception as e:
     lbar.end()
     logging.exception('\n\nAn error occurred during image processing.\nError message:\n\n'+str(e)+'\n\n'+error_persist_message)
     exit()
-lbar.end()
 
 #copy texture to temp and rename
 subprocess.run(f'copy {texture} {bt_dir}\\temp\\item_texture.png',shell=True)
