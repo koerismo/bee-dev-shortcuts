@@ -133,7 +133,7 @@ if not (model == ""):
                                    '-ep',bt_config["portal 2 folder"]+"\\bin\\",
                                    '-mn',item_name+"_mat.vmt"
                                    ],stdout=subprocess.PIPE)
-        print(bprocess.stdout)
+        #print(bprocess.stdout)
     except: #'-f','0','-o',bt_dir+'/temp/icon_rendered.png','--debug-python',
         bset(0,"an error occurred in blender!")
         lbar.end()
@@ -225,8 +225,8 @@ f'{bt_config["package root"]}\\resources\\models\\props_map_editor\\{pkg_name}\\
 
 print("\n\nCleaning up...")
 shutil.rmtree(bt_dir+"\\temp\\")
-os.makedirs(bt_dir+"\\temp\\")
 shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}')
+os.makedirs(bt_dir+"\\temp\\")
 
 print("\n\nFinished processing! All resources exported to package.\n")
 input("")
