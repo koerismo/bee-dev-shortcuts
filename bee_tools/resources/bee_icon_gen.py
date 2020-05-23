@@ -224,9 +224,15 @@ for x in os.listdir(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map
 f'{bt_config["package root"]}\\resources\\models\\props_map_editor\\{pkg_name}\\{x.replace("temp",item_name)}')
 
 print("\n\nCleaning up...")
-shutil.rmtree(bt_dir+"\\temp\\")
-shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}')
-os.makedirs(bt_dir+"\\temp\\")
+try:
+    shutil.rmtree(bt_dir+"\\temp\\")
+except Exception as e:
+    logging.exception("\n\nfailed to clear temp folder.\nError code:\n\n"+e+"\n\n")
+try:
+    shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}')
+except Exception as e:
+    logging.exception("\n\nfailed to clear portal 2 temporary model folder.\nError code:\n\n"+e+"\n\n")
+Path(bt_dir+"\\temp\\").mkdir(parents=True, exist_ok=True)
 
 print("\n\nFinished processing! All resources exported to package.\n")
 input("")
