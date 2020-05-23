@@ -116,7 +116,7 @@ else:
         print("Your model is missing textures! Aborting...")
         exit()
 print(f"Data:\n   icon:{icon}\n   texture:{texture}\n   model:{model}\n")
-item_name = input("\nitem name: ")
+item_name = "_".join(input("\nitem name: ").lower().split(" "))
 lbar.begin()
 lbar.setbar(0)
 if not (model == ""):
@@ -182,7 +182,7 @@ gen_qc.saveVMT(
 
 #generate qc
 qc_properties = {
-    "export_path":f'props_map_editor\\{pkg_name}\\temp.mdl',
+    "export_path":f'props_map_editor\\{pkg_name}\\{item_name}.mdl',
     "cd_mats":"BEE2\\models\\props_map_editor\\"+pkg_name.lower()+"\\",
     "smd_path":bt_dir+"\\temp\\Collection.smd"
     #"export_path":bt_config["portal 2 folder"]+"\\portal2\\models"+bt_config["temp model folder"]
@@ -215,25 +215,18 @@ Path(bt_config["package root"]+f'\\resources\\materials\\models\\props_map_edito
 shutil.copy(bt_dir+"\\temp\\icon_large.vtf",
 bt_config["package root"]+f'\\resources\\materials\\models\\props_map_editor\\palette\\bee2\\{pkg_name}\\{item_name}.vtf')
     
-#copy model folder to temp
-print("\n\ncopying compiled models to temp folder...\n")
-shutil.copytree( #yep, i have to use this.
-    f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}',
-    f'{bt_dir}\\temp\\compiled'
-    )
-print("\n\ncopying models from temp to package...\n")
+print("\n\ncopying models from portal 2 to package...\n")
 #rename all files
-mp_path = os.path.abspath(f'{bt_dir}\\temp\\compiled')+"\\"
 Path(bt_config["package root"]+f"\\resources\\models\\props_map_editor\\{pkg_name}").mkdir(parents=True, exist_ok=True)
-for x in os.listdir(mp_path):
-    print(f"copying {mp_path+x}...")
-    shutil.copy(mp_path+x,
+for x in os.listdir(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}\\'):
+    print(f"copying {x}...")
+    shutil.copy(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}\\'+x,
 f'{bt_config["package root"]}\\resources\\models\\props_map_editor\\{pkg_name}\\{x.replace("temp",item_name)}')
 
 print("\n\nCleaning up...")
 shutil.rmtree(bt_dir+"\\temp\\")
 os.makedirs(bt_dir+"\\temp\\")
-shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models{bt_config["temp model folder"]}')
+shutil.rmtree(f'{bt_config["portal 2 folder"]}\\portal2\\models\\props_map_editor\\{pkg_name}')
 
 print("\n\nFinished processing! All resources exported to package.\n")
 input("")
