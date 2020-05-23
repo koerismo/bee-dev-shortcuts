@@ -5,6 +5,5 @@
 	"blender script":	"\\resources\\blender_run.py",
 	"vtfcmd exe":		"\\exe\\VTFLib x64\\VTFCmd.exe",
 	"vtfcmd relative":	true,
-	"portal 2 folder":	"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Portal 2",
-	"temp model folder": "\\bee_dev_auto"
+	"portal 2 folder":	"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Portal 2"
 }
