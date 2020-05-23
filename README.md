@@ -12,10 +12,8 @@ things required
 # Usage
 ### Be sure to modify config.json before using.
 items needed:
-- an icon image (png)
 - a texture image (png)
 - a 3d model (obj)
-*Important: If you plan to use an icon and a model, make sure you name it "icon.png" and name the texture "texture.png"*
 
 Download the Blender 2.8 portable zip from blender.org and place it in `bee_tools/exe/`
 
