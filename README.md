@@ -32,6 +32,7 @@ Examples:
 `python3 bee_icon_gen.py "my_obj.obj" "my_image.png"`
 
 > You may encounter an error when the program attempts to create `bee_tools/temp` after deleting it. This will not cause any problems if the program is launched without this folder present. It will be created again.
+
 > Edit: a patch has been released which changes the method of how the directory is created. Please submit an issue if the issue still occurs.
 
 When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your package name.
