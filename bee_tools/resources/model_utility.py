@@ -83,7 +83,7 @@ try:
         activity = "generating VMT file"
         gen_qc.saveVMT(
             output['material_dir'],
-            os.path.join(temp_dir,mat_basename+'.vmt')
+            os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir']))
     )
 
 

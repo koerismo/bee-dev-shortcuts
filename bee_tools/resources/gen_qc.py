@@ -8,6 +8,7 @@ $surfaceprop "metalpanel"
 $contents "solid"
 $mostlyopaque
 $cdmaterials "{props['cd_mats']}"
+$cdmaterials "BEE2\\{props['cd_mats']}"
 $cbox 0 0 0 0 0 0
 $sequence "idle" "{props['smd_path']}"
 ''')
