@@ -26,28 +26,60 @@ Modify `bee_tools/config.json` so that it properly reflects your system. Chances
 
 Run `model_utility.py` to use.
 
-```
-usage: model_utility.py [-h] -mdl -tex -name
-                        [-pkg ] [-skmat] [-scomp]
-                        [-matdir ] [-mdldir ]
+`model_utility.py [-h] -mdl -tex -name [-pkg ] [-skmat] [-scomp] [-matdir] [-mdldir]`
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -mdl, --model-in 
-                        OBJ model to be processed.
-  -tex, --texture-in 
-                        PNG texture to be processed.
-  -name, --item-name 
-                        The name that will be assigned to all relevant files.
-  -pkg, --package-out 
-                        Package directory to be exported to
-  -skmat, --skip-mat    Skip generating materials.
-  -scomp, --skip-compile
-                        Skip model compilation.
-  -matdir, --mat-override
-                        Override materials.
-  -mdldir, --model-override
-                        Override model.
-```
+`  -h, --help`
+show this help message and exit
+
+Example: -h
+
+
+`  -mdl, --model-in`
+OBJ model to be processed.
+
+Example: -mdl 'my_model.obj'
+
+
+`  -tex, --texture-in`
+PNG texture to be processed.
+
+Example: -tex 'my_texture.png'
+
+
+`  -name, --item-name`
+The name that will be assigned to all relevant files.
+
+Example: -name 'my_item'
+
+
+`  -pkg, --package-out`
+Package directory to be exported to. (THIS IS NOT YET FUNCTIONAL)
+
+Example: -pkg 'path\\to\\package\\folder'
+
+
+`  -skmat, --skip-mat`
+Skip generating materials.
+
+Example: -skmat
+
+
+`  -scomp, --skip-compile`
+Skip model compilation.
+
+Example: -scomp
+
+
+`  -matdir, --mat-override`
+Override materials.
+
+Example: -matdir 'props_map_editor\\my_material.vmt'
+
+
+`  -mdldir, --model-override`
+Override model.
+
+Example: -mldir 'props_map_editor\\my_model.mdl'
 
 When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your name.
