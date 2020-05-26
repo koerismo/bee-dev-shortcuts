@@ -101,6 +101,8 @@ try:
     #--------- COMPILE MODEL ---------#
 
     if not args.skip_compile:
+        compiled_basepath = os.path.dirname(os.path.join(config['p2_folder'],'portal2\\models',output['model_dir']))
+        Path(compiled_basepath).mkdir(parents=True, exist_ok=True)
         activity = "compiling model"
         stprocess = subprocess.run([os.path.join(config['p2_folder'],'bin\\studiomdl.exe'),
                                     '-game',os.path.join(config['p2_folder'],'portal2\\'),
@@ -110,7 +112,12 @@ try:
 
     #--------- COPY COMPILED MODEL ---------#
 
-        shutil.copy(os.path.join(config['p2_folder'],'portal2\\models',output['model_dir']),os.path.join(temp_dir,os.path.basename(output['model_dir'])))
+
+        activity = "copying model data"
+        bname = os.path.basename(output['model_dir']).split('.')[0]
+        for x in os.listdir(compiled_basepath):
+            if (x.startswith(bname)):
+                shutil.copy(os.path.join(compiled_basepath,x),os.path.join(temp_dir,x))
 
         
 except Exception as e:
