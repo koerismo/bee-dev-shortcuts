@@ -29,6 +29,7 @@ Run `model_utility.py` to use.
 `model_utility.py [-h] -mdl -tex -name [-pkg ] [-skmat] [-scomp] [-matdir] [-mdldir]`
 
 optional arguments:
+
 `  -h, --help`
 show this help message and exit
 
