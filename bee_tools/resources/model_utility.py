@@ -2,7 +2,8 @@ try:
     activity = "loading" #cool new crash system
     print("BEE DEVELOPER TOOL V2 BY BAGUETTERY\n\n")
     import loadingbar, subprocess, sys, json, os, gen_qc, shutil, argparse
-
+    from PIL import Image
+    from pathlib import Path
 
     #--------- PARSE ARGUMENTS ---------#
 
@@ -21,23 +22,33 @@ try:
 
     #--------- SET DEFAULTS AND OVERRIDES ---------#
 
-    config = json.loads(open(os.path.join(bt_dir,"config.json"),"r").read())
-
-    loc_dir = os.path.abspath(__file__)
+    loc_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),"..\\"))
     temp_dir = os.path.join(loc_dir,'temp\\')
+
+    config = json.loads(open(os.path.join(loc_dir,"config.json"),"r").read())
     
     output = {
-        'model_dir':f'props_map_editor\\{args["item_name"]}.mdl',
-        'material_dir':f'props_map_editor\\{args["item_name"]}.vmt',
-        'icon_dir':f'props_map_editor\\{args["item_name"]}.vtf'
+        'model_dir':f'props_map_editor\\{args.item_name}.mdl',
+        'material_dir':f'props_map_editor\\{args.item_name}.vmt',
+        'icon_dir':f'props_map_editor\\{args.item_name}.vtf'
     }
 
-
+    activity = "checking overrides"
     
-    if (args["override_model"]):
-        output['model_dir'] = args["override_model"]
-    if (args["override_mat"]):
-        output['material_dir'] = args["override_mat"]
+    if (args.override_model):
+        output['model_dir'] = args.override_model
+    if (args.override_mat):
+        output['material_dir'] = args.override_mat
+
+    #--------- RESIZE PNG IMAGES ---------#
+
+    activity = "processing textures"
+    if not args.skip_mat:
+        img_icon = Image.open(args.texture_in)
+        img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
+        img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
+        img_icon_small.save(os.path.join(temp_dir,'icon_small.png'))
+        img_icon_large.save(os.path.join(temp_dir,'icon_large.png'))
 
 
     #--------- GENERATE QC FILE ---------#
@@ -47,24 +58,15 @@ try:
     qc = {
         'export_path':output['model_dir'],
         'cd_mats':os.path.dirname(output['material_dir']),
-        'smd_path':temp_dir
+        'smd_path':os.path.join(temp_dir,"Collection.smd")
     }
-    gen_qc.saveQC(qc_properties,temp_dir)
-
-
-    #--------- RESIZE PNG IMAGES ---------#
-
-    if not args['skip_mat']:
-        img_icon = Image.open(args['texture_in'])
-        img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
-        img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
-        img_icon_small.save(os.path.join(temp_dir,'icon_small.png'))
-        img_icon_large.save(os.path.join(temp_dir,'icon_large.png'))
+    gen_qc.saveQC(qc,os.path.join(temp_dir,"Collection.qc"))
 
 
     #--------- GENERATE VTF FILE ---------#
 
-    #if not args['skip_mat']:
+    activity = "generating VTF file"
+    if not args.skip_mat:
         vprocess = subprocess.run([os.path.join(loc_dir,'exe\\VTFLib x64\\VTFCmd.exe'),
                                    '-file', os.path.join(temp_dir,'icon_large.png'),
                                    '-output',temp_dir
@@ -77,36 +79,39 @@ try:
         activity = "generating VMT file"
         gen_qc.saveVMT(
             output['icon_dir'],
-            output['material_dir']
+            os.path.join(temp_dir,"icon_large.vmt")
     )
 
 
     #--------- RUN BLENDER ---------#
 
     activity = "running blender"
-    bprocess = subprocess.run([blender_path,'-b',os.path.join(loc_dir,'resources\\default.blend'),
+    bprocess = subprocess.run([os.path.join(loc_dir,config['blender_path']),'-b',os.path.join(loc_dir,'resources\\default.blend'),
                                '-x','0',
                                '--python-exit-code','1',
                                '--python',os.path.join(loc_dir,'resources\\blender_run.py'),
                                '--',
-                               '-mi',args['model_in'],
-                               '-tx',args['texture_in'],
+                               '-mi',args.model_in,
+                               '-tx',args.texture_in,
                                '-mo',temp_dir,
                                '-ep',os.path.join(config['p2_folder'],'bin\\'),
-                               '-mn',output['material_dir']
+                               '-mn',os.path.basename(output['material_dir'])
                                ],stdout=subprocess.PIPE)
-
 
     #--------- COMPILE MODEL ---------#
 
-    if not args['skip_compile']:
+    if not args.skip_compile:
         activity = "compiling model"
         stprocess = subprocess.run([os.path.join(config['p2_folder'],'bin\\studiomdl.exe'),
-                                    os.path.join(config['p2_folder'],'portal2\\'),
+                                    '-game',os.path.join(config['p2_folder'],'portal2\\'),
                                     os.path.join(temp_dir,'Collection.qc')
                                        ],stdout=subprocess.PIPE)
 
 
-    
+    #--------- COPY COMPILED MODEL ---------#
+
+        shutil.copy(os.path.join(config['p2_folder'],'portal2\\models',output['model_dir']),os.path.join(temp_dir,os.path.basename(output['model_dir'])))
+
+        
 except Exception as e:
-    print("\n\nAn error occurred while "+activity+". Error code:\n\n"+e+"\n\n")
+    print("\n\nAn error occurred while "+activity+". Error code:\n\n"+str(e)+"\n\n")
