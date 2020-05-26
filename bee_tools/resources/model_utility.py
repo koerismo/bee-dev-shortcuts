@@ -28,14 +28,14 @@ try:
     temp_dir = os.path.join(loc_dir,'temp\\')
 
     config = json.loads(open(os.path.join(loc_dir,"config.json"),"r").read())
-    
+
     output = {
         'model_dir':f'props_map_editor\\{args.item_name}.mdl',
         'material_dir':f'props_map_editor\\{args.item_name}.vmt'
     }
 
     activity = "checking overrides"
-    
+
     if (args.override_model):
         output['model_dir'] = args.override_model
     if (args.override_mat):
@@ -45,7 +45,7 @@ try:
     #--------- GENERATE QC FILE ---------#
 
     activity = "generating QC file"
-        
+
     qc = {
         'export_path':output['model_dir'],
         'cd_mats':os.path.dirname(output['material_dir']),
@@ -57,12 +57,13 @@ try:
     #--------- RESIZE PNG TEXTURES ---------#
 
     activity = "processing textures"
+    mat_basename = os.path.basename(output['material_dir']).split('.')[0]
     if not args.skip_mat:
         Path( os.path.join(temp_dir,'BEE2\\items\\clean') ).mkdir(parents=True, exist_ok=True)
         Path( os.path.join(temp_dir,'temp2') ).mkdir(parents=True, exist_ok=True)
         img_icon = Image.open(args.texture_in)
         img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
-        img_icon_large.save(os.path.join(temp_dir,'temp2',args.item_name+'.png'))
+        img_icon_large.save(os.path.join(temp_dir,'temp2',mat_basename+'.png'))
 
 
     #--------- GENERATE VTF TEXTURE ---------#
@@ -71,7 +72,7 @@ try:
     Path( os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir'])) ).mkdir(parents=True, exist_ok=True)
     if not args.skip_mat:
         vprocess = subprocess.run([os.path.join(loc_dir,'exe\\VTFLib x64\\VTFCmd.exe'),
-                                   '-file', os.path.join(temp_dir,'temp2',f'{args.item_name}.png'),
+                                   '-file', os.path.join(temp_dir,'temp2',mat_basename+'.png'),
                                    '-output',os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir']))
                                    ],stdout=subprocess.PIPE)
 
@@ -82,7 +83,7 @@ try:
         activity = "generating VMT file"
         gen_qc.saveVMT(
             os.path.dirname(output['material_dir']),
-            os.path.join(temp_dir,args.item_name+'.vmt')
+            os.path.join(temp_dir,mat_basename+'.vmt')
     )
 
 
@@ -101,7 +102,7 @@ try:
                                '-mn',os.path.basename(output['material_dir'])
                                ],stdout=subprocess.PIPE)
 
-    
+
     #--------- RESIZE PNG ICON ---------#
 
     activity = "processing textures"
@@ -111,7 +112,7 @@ try:
         img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
         img_icon_small.save(os.path.join(temp_dir,'BEE2\\items\\clean',args.item_name+'.png'))
         os.rename(os.path.join(temp_dir,'icon_rendered.png'),os.path.join(temp_dir,args.item_name+'.png'))
-        
+
 
     #--------- GENERATE VTF ICON ---------#
 
@@ -148,6 +149,6 @@ try:
                             os.path.join(temp_dir,'models',os.path.dirname(output['model_dir']),x)
                             )
 
-        
+
 except Exception as e:
     print("\n\nAn error occurred while "+activity+". Error code:\n\n"+str(e)+"\n\n")
