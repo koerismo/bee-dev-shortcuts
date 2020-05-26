@@ -19,5 +19,6 @@ def saveVMT(tex_path,di):
     q.write('''UnLitGeneric
 {
     $baseTexture "'''+tex_path+'''"
+    $translucent
 }''')
     q.close()

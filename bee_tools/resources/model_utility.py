@@ -83,7 +83,7 @@ try:
         activity = "generating VMT file"
         gen_qc.saveVMT(
             output['material_dir'],
-            os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir']))
+            os.path.join(temp_dir,'materials',output['material_dir'])
     )
 
 
@@ -151,4 +151,4 @@ try:
 
 
 except Exception as e:
-    print("\n\nAn error occurred while "+activity+". Error code:\n\n"+str(e)+"\n\n")
+    raise Exception("\n\nAn error occurred while "+activity+". Error code:\n\n"+str(e)+"\n\n")
