@@ -28,59 +28,57 @@ Run `model_utility.py` to use.
 
 ## Arguments
 
-#### `model_utility.py [-h] -mdl -tex -name [-pkg ] [-skmat] [-scomp] [-matdir] [-mdldir]`
+#### `model_utility.py [-h] -mdl -tex -name [-skmat] [-sicon] [-scomp] [-matdir] [-mdldir]`
+
 
 `  -h, --help`
+  
 show this help message and exit
-
-Example: `-h`
 
 
 `  -mdl, --model-in`
+  
 OBJ model to be processed.
-
-Example: `-mdl 'my_model.obj'`
 
 
 `  -tex, --texture-in`
+  
 PNG texture to be processed.
-
-Example: `-tex 'my_texture.png'`
 
 
 `  -name, --item-name`
-The name that will be assigned to all relevant files.
-
-Example: `-name 'my_item'`
-
-
-`  -pkg, --package-out`
-Package directory to be exported to. (THIS IS NOT YET FUNCTIONAL)
-
-Example: `-pkg 'path\\to\\package\\folder'`
+  
+The prefix that will be assigned to all relevant files.
 
 
 `  -skmat, --skip-mat`
+  
 Skip generating materials.
 
-Example: `-skmat`
+
+`  -sicon, --skip-icon`
+  
+Skip generating icon.
 
 
 `  -scomp, --skip-compile`
+  
 Skip model compilation.
-
-Example: `-scomp`
 
 
 `  -matdir, --mat-override`
+  
 Override materials.
 
-Example: `-matdir 'props_map_editor\\my_material.vmt'`
+Example: -matdir 'props_map_editor\\my_material.vmt'
 
 
-`  -mdldir, --model-override`
+  -mdldir, --model-override
+  
 Override model.
 
-Example: `-mldir 'props_map_editor\\my_model.mdl'`
+Example: -mldir 'props_map_editor\\my_model.mdl'
+
+***
 
 When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your name.
