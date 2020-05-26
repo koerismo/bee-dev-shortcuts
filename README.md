@@ -1,4 +1,5 @@
 # bee-dev-tool
+
 a tool to make bee packages less painful
 
 ***
@@ -23,16 +24,63 @@ Open `blender.exe` and install the blender source tools addon. (I pre-downloaded
 
 Modify `bee_tools/config.json` so that it properly reflects your system. Chances are, you will only have to modify the Blender path and your portal 2 path.
 
-that's the entire thing. To use, launch `bee_tools/resources/bee_icon_gen.py` with python 3 and supply it with a png and an obj file.
+Run `model_utility.py` to use.
 
-Examples:
+## Arguments
 
-`python3 bee_icon_gen.py "my_image.png" "my_obj.obj"`
+#### `model_utility.py [-h] -mdl -tex -name [-pkg ] [-skmat] [-scomp] [-matdir] [-mdldir]`
 
-`python3 bee_icon_gen.py "my_obj.obj" "my_image.png"`
+`  -h, --help`
+show this help message and exit
 
-> You may encounter an error when the program attempts to create `bee_tools/temp` after deleting it. This will not cause any problems if the program is launched without this folder present. It will be created again.
+Example: `-h`
 
-> Edit: a patch has been released which changes the method of how the directory is created. Please submit an issue if the issue still occurs.
 
-When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your package name.
+`  -mdl, --model-in`
+OBJ model to be processed.
+
+Example: `-mdl 'my_model.obj'`
+
+
+`  -tex, --texture-in`
+PNG texture to be processed.
+
+Example: `-tex 'my_texture.png'`
+
+
+`  -name, --item-name`
+The name that will be assigned to all relevant files.
+
+Example: `-name 'my_item'`
+
+
+`  -pkg, --package-out`
+Package directory to be exported to. (THIS IS NOT YET FUNCTIONAL)
+
+Example: `-pkg 'path\\to\\package\\folder'`
+
+
+`  -skmat, --skip-mat`
+Skip generating materials.
+
+Example: `-skmat`
+
+
+`  -scomp, --skip-compile`
+Skip model compilation.
+
+Example: `-scomp`
+
+
+`  -matdir, --mat-override`
+Override materials.
+
+Example: `-matdir 'props_map_editor\\my_material.vmt'`
+
+
+`  -mdldir, --model-override`
+Override model.
+
+Example: `-mldir 'props_map_editor\\my_model.mdl'`
+
+When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your name.
