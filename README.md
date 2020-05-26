@@ -70,14 +70,14 @@ Skip model compilation.
   
 Override materials.
 
-Example: -matdir 'props_map_editor\\my_material.vmt'
+Example: `-matdir 'props_map_editor\\my_material.vmt'`
 
 
   -mdldir, --model-override
   
 Override model.
 
-Example: -mldir 'props_map_editor\\my_model.mdl'
+Example: `-mldir 'props_map_editor\\my_model.mdl'`
 
 ***
 
