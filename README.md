@@ -23,16 +23,30 @@ Open `blender.exe` and install the blender source tools addon. (I pre-downloaded
 
 Modify `bee_tools/config.json` so that it properly reflects your system. Chances are, you will only have to modify the Blender path and your portal 2 path.
 
-that's the entire thing. To use, launch `bee_tools/resources/bee_icon_gen.py` with python 3 and supply it with a png and an obj file.
+Run `model_utility.py` to use.
 
-Examples:
+```
+usage: model_utility.py [-h] -mdl -tex -name
+                        [-pkg ] [-skmat] [-scomp]
+                        [-matdir ] [-mdldir ]
 
-`python3 bee_icon_gen.py "my_image.png" "my_obj.obj"`
+optional arguments:
+  -h, --help            show this help message and exit
+  -mdl, --model-in 
+                        OBJ model to be processed.
+  -tex, --texture-in 
+                        PNG texture to be processed.
+  -name, --item-name 
+                        The name that will be assigned to all relevant files.
+  -pkg, --package-out 
+                        Package directory to be exported to
+  -skmat, --skip-mat    Skip generating materials.
+  -scomp, --skip-compile
+                        Skip model compilation.
+  -matdir, --mat-override
+                        Override materials.
+  -mdldir, --model-override
+                        Override model.
+```
 
-`python3 bee_icon_gen.py "my_obj.obj" "my_image.png"`
-
-> You may encounter an error when the program attempts to create `bee_tools/temp` after deleting it. This will not cause any problems if the program is launched without this folder present. It will be created again.
-
-> Edit: a patch has been released which changes the method of how the directory is created. Please submit an issue if the issue still occurs.
-
-When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your package name.
+When adding an item, resources will be placed in subfolders named after your package. Make sure your item name is unique. A good practice is to begin the item name with your name.
