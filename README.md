@@ -1,4 +1,6 @@
 # bee-dev-tool
+[![HitCount](http://hits.dwyl.com/koerismo/QOL-BEE.svg)](http://hits.dwyl.com/koerismo/QOL-BEE)
+
 a tool to make bee packages less painful
 
 ***
