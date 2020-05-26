@@ -12,11 +12,13 @@ try:
     parser.add_argument('-mdl','--model-in', help='OBJ model to be processed.',dest='model_in',required=True)
     parser.add_argument('-tex','--texture-in', help='PNG texture to be processed.',dest='texture_in',required=True)
     parser.add_argument('-name','--item-name', help='The prefix that will be assigned to all relevant files.',dest='item_name',required=True)
-    parser.add_argument('-pkg','--package-out', help='Package directory to be exported to',dest='pkg_out')
     parser.add_argument('-skmat','--skip-mat', help='Skip generating materials.',dest='skip_mat',action='store_true')
+    parser.add_argument('-sicon','--skip-icon', help='Skip generating icon.',dest='skip_icon',action='store_true')
     parser.add_argument('-scomp','--skip-compile', help='Skip model compilation.',dest='skip_compile',action='store_true')
     parser.add_argument('-matdir','--mat-override', help='Override materials.',dest='override_mat')
     parser.add_argument('-mdldir','--model-override', help='Override model.',dest='override_model')
+    #parser.add_argument('-cpy','--copy-result', help='Copy the processed resources to portal 2.',dest='copy_p2')
+    #coming soon :)
     args = parser.parse_args()
 
 
@@ -29,8 +31,7 @@ try:
     
     output = {
         'model_dir':f'props_map_editor\\{args.item_name}.mdl',
-        'material_dir':f'props_map_editor\\{args.item_name}.vmt',
-        'icon_dir':f'props_map_editor\\{args.item_name}.vtf'
+        'material_dir':f'props_map_editor\\{args.item_name}.vmt'
     }
 
     activity = "checking overrides"
@@ -39,16 +40,6 @@ try:
         output['model_dir'] = args.override_model
     if (args.override_mat):
         output['material_dir'] = args.override_mat
-
-    #--------- RESIZE PNG IMAGES ---------#
-
-    activity = "processing textures"
-    if not args.skip_mat:
-        img_icon = Image.open(args.texture_in)
-        img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
-        img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
-        img_icon_small.save(os.path.join(temp_dir,'icon_small.png'))
-        img_icon_large.save(os.path.join(temp_dir,'icon_large.png'))
 
 
     #--------- GENERATE QC FILE ---------#
@@ -63,23 +54,35 @@ try:
     gen_qc.saveQC(qc,os.path.join(temp_dir,"Collection.qc"))
 
 
-    #--------- GENERATE VTF FILE ---------#
+    #--------- RESIZE PNG TEXTURES ---------#
+
+    activity = "processing textures"
+    if not args.skip_mat:
+        Path( os.path.join(temp_dir,'BEE2\\items\\clean') ).mkdir(parents=True, exist_ok=True)
+        Path( os.path.join(temp_dir,'temp2') ).mkdir(parents=True, exist_ok=True)
+        img_icon = Image.open(args.texture_in)
+        img_icon_large = img_icon.resize((256,256), Image.ANTIALIAS)
+        img_icon_large.save(os.path.join(temp_dir,'temp2',args.item_name+'.png'))
+
+
+    #--------- GENERATE VTF TEXTURE ---------#
 
     activity = "generating VTF file"
+    Path( os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir'])) ).mkdir(parents=True, exist_ok=True)
     if not args.skip_mat:
         vprocess = subprocess.run([os.path.join(loc_dir,'exe\\VTFLib x64\\VTFCmd.exe'),
-                                   '-file', os.path.join(temp_dir,'icon_large.png'),
-                                   '-output',temp_dir
+                                   '-file', os.path.join(temp_dir,'temp2',f'{args.item_name}.png'),
+                                   '-output',os.path.join(temp_dir,'materials',os.path.dirname(output['material_dir']))
                                    ],stdout=subprocess.PIPE)
 
 
-    #--------- GENERATE VMT FILE ---------#
+    #--------- GENERATE VMT TEXTURE ---------#
 
     #if not args['skip_mat']:
         activity = "generating VMT file"
         gen_qc.saveVMT(
-            output['icon_dir'],
-            os.path.join(temp_dir,"icon_large.vmt")
+            os.path.dirname(output['material_dir']),
+            os.path.join(temp_dir,args.item_name+'.vmt')
     )
 
 
@@ -97,6 +100,29 @@ try:
                                '-ep',os.path.join(config['p2_folder'],'bin\\'),
                                '-mn',os.path.basename(output['material_dir'])
                                ],stdout=subprocess.PIPE)
+
+    
+    #--------- RESIZE PNG ICON ---------#
+
+    activity = "processing textures"
+    if not args.skip_icon:
+        Path( os.path.join(temp_dir,'BEE2\\items\\clean') ).mkdir(parents=True, exist_ok=True)
+        img_icon = Image.open(os.path.join(temp_dir,'icon_rendered.png'))
+        img_icon_small = img_icon.resize((64,64), Image.ANTIALIAS)
+        img_icon_small.save(os.path.join(temp_dir,'BEE2\\items\\clean',args.item_name+'.png'))
+        os.rename(os.path.join(temp_dir,'icon_rendered.png'),os.path.join(temp_dir,args.item_name+'.png'))
+        
+
+    #--------- GENERATE VTF ICON ---------#
+
+    if not args.skip_icon:
+        activity = "generating VTF icon"
+        Path( os.path.join(temp_dir,'materials\\models\\props_map_editor\\palette\\bee2') ).mkdir(parents=True, exist_ok=True)
+        vprocess = subprocess.run([os.path.join(loc_dir,'exe\\VTFLib x64\\VTFCmd.exe'),
+                                   '-file', os.path.join(temp_dir,args.item_name+'.png'),
+                                   '-output',os.path.join(temp_dir,'materials\\models\\props_map_editor\\palette\\bee2')
+                                   ],stdout=subprocess.PIPE)
+
 
     #--------- COMPILE MODEL ---------#
 
@@ -117,7 +143,10 @@ try:
         bname = os.path.basename(output['model_dir']).split('.')[0]
         for x in os.listdir(compiled_basepath):
             if (x.startswith(bname)):
-                shutil.copy(os.path.join(compiled_basepath,x),os.path.join(temp_dir,x))
+                Path(os.path.join(temp_dir,'models',os.path.dirname(output['model_dir']))).mkdir(parents=True, exist_ok=True)
+                shutil.copy(os.path.join(compiled_basepath,x),
+                            os.path.join(temp_dir,'models',os.path.dirname(output['model_dir']),x)
+                            )
 
         
 except Exception as e:
