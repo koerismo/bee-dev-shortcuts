@@ -82,7 +82,7 @@ try:
     #if not args['skip_mat']:
         activity = "generating VMT file"
         gen_qc.saveVMT(
-            os.path.dirname(output['material_dir']),
+            output['material_dir'],
             os.path.join(temp_dir,mat_basename+'.vmt')
     )
 
