@@ -1,9 +1,3 @@
 {
-	"package root":		"C:\\Users\\Jadon\\Downloads\\Test Package",
-	"blender exe":		"\\exe\\blender-2.82a-windows64\\blender.exe",
-	"blender relative":	true,
-	"blender script":	"\\resources\\blender_run.py",
-	"vtfcmd exe":		"\\exe\\VTFLib x64\\VTFCmd.exe",
-	"vtfcmd relative":	true,
-	"portal 2 folder":	"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Portal 2"
+	"p2_folder": ""
 }
