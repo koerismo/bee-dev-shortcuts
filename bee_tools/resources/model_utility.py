@@ -1,8 +1,11 @@
 try:
-    activity = "loading" #cool new crash system
+    activity = "loading libraries" #cool new crash system
     print("BEE DEVELOPER TOOL V2 BY BAGUETTERY\n\n")
     import loadingbar, subprocess, sys, json, os, gen_qc, shutil, argparse
-    from PIL import Image
+    try:
+        from PIL import Image
+    except:
+        raise Exception("Failed to load Pillow library. Make sure you have it installed!")
     from pathlib import Path
 
     #--------- PARSE ARGUMENTS ---------#
@@ -34,7 +37,7 @@ try:
         'material_dir':f'props_map_editor\\{args.item_name}.vmt'
     }
 
-    activity = "checking overrides"
+    activity = "checking override parameters"
 
     if (args.override_model):
         output['model_dir'] = args.override_model
